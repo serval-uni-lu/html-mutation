@@ -18,10 +18,7 @@ Then make sure you have the following to be able to build:
 2. ```git clone git@github.com:serval-uni-lu/html-mutation.git```
 3. ```cd html-mutation```
 4. ```potery env use python```
-
-## Build the project
-
-```poetry install```
+5. ```poetry install```
 
 ## Run tests
 
