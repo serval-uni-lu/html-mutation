@@ -48,7 +48,7 @@ class DomParser:
         return DomInfo(path, dom, screenshot)
 
 
-def xpath(element) -> str:
+def generate_xpath(element) -> str:
     components = []
     child = element if element.name else element.parent
     for parent in child.parents:
@@ -61,3 +61,7 @@ def xpath(element) -> str:
         child = parent
     components.reverse()
     return "/%s" % "/".join(components)
+
+
+def get_element_by_xpath(dom: BeautifulSoup, xpath: str):
+    pass
