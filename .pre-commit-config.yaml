@@ -24,7 +24,6 @@ repos:
     rev: v4.2.0
     hooks:
       - id: check-added-large-files
-      - id: check-json
       - id: check-case-conflict
       - id: detect-private-key
       - id: end-of-file-fixer

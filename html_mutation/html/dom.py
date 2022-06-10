@@ -55,9 +55,9 @@ def xpath(element) -> str:
         siblings = parent.find_all(child.name, recursive=False)
         components.append(
             child.name
-            if len(siblings) == 1 else
-            '%s[%d]' % (child.name, 1 + siblings.index(child))
-            )
+            if len(siblings) == 1
+            else "%s[%d]" % (child.name, 1 + siblings.index(child))
+        )
         child = parent
     components.reverse()
-    return '/%s' % '/'.join(components)
+    return "/%s" % "/".join(components)

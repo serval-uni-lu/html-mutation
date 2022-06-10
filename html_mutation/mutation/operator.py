@@ -1,9 +1,9 @@
 from abc import abstractmethod
-from copy import deepcopy
-from html_mutation.html.dom import DomInfo
+
+from bs4 import BeautifulSoup
 
 from html_mutation.html.tags import Tag
-from bs4 import BeautifulSoup
+
 
 class BaseOperator:
     def __init__(
@@ -16,7 +16,7 @@ class BaseOperator:
         )
 
     @abstractmethod
-    def mutate(self, dom: BeautifulSoup) :
+    def mutate(self, dom: BeautifulSoup):
         pass
 
     @abstractmethod
@@ -47,8 +47,7 @@ class ChangeTextOperator(BaseOperator):
     def mutate(self, dom: BeautifulSoup):
         for node in dom.descendants:
             if node.name in self.tags and node.string is not None:
-                copy = deepcopy(dom)
-
+                pass
 
 
 class Mutant:
