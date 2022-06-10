@@ -1,9 +1,12 @@
-from html_mutation.html.tags import Tag
 from abc import abstractmethod
+
+from html_mutation.html.tags import Tag
 
 
 class BaseOperator:
-    def __init__(self, name: str, short_name: str, ignored_tags: set[Tag]) -> None:
+    def __init__(
+        self, name: str, short_name: str, ignored_tags: set[Tag]
+    ) -> None:
         self.name = name
         self.short_name = short_name
         self.tags = self.default_tags() - (

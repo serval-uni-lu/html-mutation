@@ -3,7 +3,9 @@ from html_mutation.mutation.operator import BaseStrategy
 
 
 class MutantGenerator:
-    def __init__(self, dom_info: DomInfo, strategies: set[BaseStrategy]) -> None:
+    def __init__(
+        self, dom_info: DomInfo, strategies: set[BaseStrategy]
+    ) -> None:
         self.domInfo = dom_info
         self.strategies = strategies
 

@@ -1,5 +1,3 @@
-import pytest
-
 from html_mutation.html import compare
 
 

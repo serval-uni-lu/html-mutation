@@ -1,5 +1,4 @@
 from html_mutation.html.tags import Tag
-
 from html_mutation.mutation import operator
 
 

@@ -1,0 +1,51 @@
+ci:
+  skip: [sync]
+
+minimum_pre_commit_version: 2.15.0
+
+repos:
+  # sync (use this repo code)
+  - repo: local
+    hooks:
+      - id: sync
+        name: sync with poetry
+        entry: poetry run swp
+        language: system
+        # need to be explicit with `files`, since we are not using the .pre-commit-hooks.yaml here
+        files: poetry.lock
+
+  - repo: https://github.com/floatingpurr/sync_with_poetry
+    rev: "0.2.1"
+    hooks:
+      - id: sync_with_poetry
+
+  # general checks (see here: https://pre-commit.com/hooks.html)
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.2.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-json
+      - id: check-case-conflict
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+      - id: trailing-whitespace
+      - id: check-toml
+
+  # black - formatting
+  - repo: https://github.com/psf/black
+    rev: 22.3.0
+    hooks:
+      - id: black
+
+  # isort - sorting imports
+  - repo: https://github.com/pycqa/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+
+  # flake8 - linting
+  - repo: https://github.com/pycqa/flake8
+    rev: 4.0.1
+    hooks:
+      - id: flake8
