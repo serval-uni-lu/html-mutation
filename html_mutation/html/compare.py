@@ -1,5 +1,6 @@
 from abc import abstractmethod
 
+
 class BaseComparator:
     def __init__(self) -> None:
         self._memory = Memory()
@@ -17,6 +18,7 @@ class ImageComparator:
 class HtmlComparator:
     def compare(self, path1: str, path2: str) -> bool:
         pass
+
 
 class Memory:
     def __init__(self) -> None:
