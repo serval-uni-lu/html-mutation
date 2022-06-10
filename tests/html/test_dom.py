@@ -6,7 +6,13 @@ from html_mutation.html.dom import xpath
 
 
 def test_bs4_copy():
-    dom_text = "<html><body><h1>Hello</h2><p>This is a DOM</p></body></html>"
+    dom_text = """
+    <html>
+        <body>
+            <h1>Hello</h2>
+            <p><span>This is a DOM</span></p>
+        </body>
+    </html>"""
     dom = BeautifulSoup(dom_text, "html5lib")
     dom_copy = dom.__copy__()
     deepcopy_dom = deepcopy(dom)
@@ -14,8 +20,13 @@ def test_bs4_copy():
 
 
 def test_change_node():
-    dom_text = "<html><body><h1>Hello</h2>"
-    "<p><span>This is a DOM</span></p></body></html>"
+    dom_text = """
+    <html>
+        <body>
+            <h1>Hello</h2>
+            <p><span>This is a DOM</span></p>
+        </body>
+    </html>"""
     dom = BeautifulSoup(dom_text, "html5lib")
     child = dom.find_all("p")[0]
     savedElement = child
@@ -30,8 +41,13 @@ def test_change_node():
 
 
 def test_xpath():
-    dom_text = "<html><body><p></p><h1>Hello</h2>"
-    "<p><span>This is a DOM</span></p></body></html>"
+    dom_text = """
+    <html>
+        <body>
+            <h1>Hello</h2>
+            <p><span>This is a DOM</span></p>
+        </body>
+    </html>"""
     dom = BeautifulSoup(dom_text, "html5lib")
-    child = dom.find_all("p")[1]
+    child = dom.find_all("p")[0]
     print(xpath(child))
