@@ -1,10 +1,7 @@
 from abc import abstractmethod
 from copy import deepcopy
 
-from bs4 import BeautifulSoup
-
 from html_mutation.html.tags import Tag
-from html_mutation.html.dom import generate_xpath
 
 class BaseOperator:
     def __init__(
@@ -17,7 +14,7 @@ class BaseOperator:
         )
 
     @abstractmethod
-    def mutate(self, dom: BeautifulSoup):
+    def mutate(self, dom):
         pass
 
     @abstractmethod
@@ -45,7 +42,7 @@ class ChangeTextOperator(BaseOperator):
             ]
         )
 
-    def mutate(self, dom: BeautifulSoup):
+    def mutate(self, dom):
         for node in dom.descendants:
             if node.name in self.tags and node.string is not None:
                 xpath_mutant = generate_xpath(node)
@@ -55,7 +52,7 @@ class ChangeTextOperator(BaseOperator):
 
 
 class Mutant:
-    def __init__(self, dom: BeautifulSoup, xpath: str, strategy: str):
+    def __init__(self, dom, xpath: str, strategy: str):
         self.dom = dom
         self.xpath = xpath
         self.strategy = strategy

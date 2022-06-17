@@ -1,15 +1,16 @@
 import base64
 import pathlib
 from io import BytesIO
+from xml.etree.ElementTree import Element, ElementTree
 
-from bs4 import BeautifulSoup
 from PIL import Image
 from selenium import webdriver
 
+import html5lib
 
 class DomInfo:
     def __init__(
-        self, path: pathlib.Path, dom: BeautifulSoup, image: Image
+        self, path: pathlib.Path, dom, image: Image
     ) -> None:
         self.path = path
         self.dom = dom
@@ -40,7 +41,7 @@ class DomParser:
             path = self.base_path / path
 
         self.driver.get(path.as_uri())
-        dom = BeautifulSoup(self.driver.page_source(), "html5lib")
+        dom = html5lib.parse(self.driver.page_source(), treebuilder="lxml")
         screenshot_base64 = self.driver.get_screenshot_as_base64()
         screenshot_bytes = base64.b64decode(screenshot_base64)
         screenshot = Image.open(BytesIO(screenshot_bytes))
@@ -48,20 +49,9 @@ class DomParser:
         return DomInfo(path, dom, screenshot)
 
 
-def generate_xpath(element) -> str:
-    components = []
-    child = element if element.name else element.parent
-    for parent in child.parents:
-        siblings = parent.find_all(child.name, recursive=False)
-        components.append(
-            child.name
-            if len(siblings) == 1
-            else "%s[%d]" % (child.name, 1 + siblings.index(child))
-        )
-        child = parent
-    components.reverse()
-    return "/%s" % "/".join(components)
+def find_all(tree: ElementTree, name: str) -> list:
+    return tree.findall(".//html:{}".format(name), tree.getroot().nsmap)
 
 
-def get_element_by_xpath(dom: BeautifulSoup, xpath: str):
-    pass
+def get_xpath(tree: ElementTree, element: Element):
+    return tree.getpath(element).replace('html:', '')
