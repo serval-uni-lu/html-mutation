@@ -3,21 +3,36 @@ import pathlib
 from io import BytesIO
 from xml.etree.ElementTree import Element, ElementTree
 
+import html5lib
 from PIL import Image
 from selenium import webdriver
 
-import html5lib
+
+class DomTree:
+    def __init__(self, tree: ElementTree) -> None:
+        self.tree = tree
+
+    def find_all(self, name: str) -> list[Element]:
+        return self.tree.findall(
+            ".//html:{}".format(name), self.tree.getroot().nsmap
+        )
+
+    def get_xpath(self, element: Element) -> str:
+        return self.tree.getpath(element).replace("html:", "")
+
+
+def parse(dom_content: str) -> DomTree:
+    return DomTree(html5lib.parse(dom_content, treebuilder="lxml"))
+
 
 class DomInfo:
-    def __init__(
-        self, path: pathlib.Path, dom, image: Image
-    ) -> None:
+    def __init__(self, path: pathlib.Path, dom: DomTree, image: Image) -> None:
         self.path = path
         self.dom = dom
         self.image = image
 
 
-class DomParser:
+class DomInfoBuilder:
     def __init__(
         self, driver: webdriver.Chrome, base_folder: str = None
     ) -> None:
@@ -34,7 +49,7 @@ class DomParser:
                 )
             self.base_path = base_path
 
-    def parse(self, html_path: str) -> DomInfo:
+    def build(self, html_path: str) -> DomInfo:
         path = pathlib.Path(html_path)
 
         if self.base_path:
@@ -47,11 +62,3 @@ class DomParser:
         screenshot = Image.open(BytesIO(screenshot_bytes))
 
         return DomInfo(path, dom, screenshot)
-
-
-def find_all(tree: ElementTree, name: str) -> list:
-    return tree.findall(".//html:{}".format(name), tree.getroot().nsmap)
-
-
-def get_xpath(tree: ElementTree, element: Element):
-    return tree.getpath(element).replace('html:', '')

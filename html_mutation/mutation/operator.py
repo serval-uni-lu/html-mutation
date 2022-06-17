@@ -1,7 +1,8 @@
 from abc import abstractmethod
-from copy import deepcopy
 
+from html_mutation.html.dom import DomTree
 from html_mutation.html.tags import Tag
+
 
 class BaseOperator:
     def __init__(
@@ -42,13 +43,10 @@ class ChangeTextOperator(BaseOperator):
             ]
         )
 
-    def mutate(self, dom):
-        for node in dom.descendants:
+    def mutate(self, tree: DomTree):
+        for node in tree:
             if node.name in self.tags and node.string is not None:
-                xpath_mutant = generate_xpath(node)
-                dom_mutant = deepcopy(dom)
-
-
+                pass
 
 
 class Mutant:
