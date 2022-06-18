@@ -7,18 +7,27 @@ import html5lib
 from PIL import Image
 from selenium import webdriver
 
+from html_mutation.html.tags import Tag
 
 class DomTree:
     def __init__(self, tree: ElementTree) -> None:
         self.tree = tree
 
-    def find_all(self, name: str) -> list[Element]:
-        return self.tree.findall(
-            ".//html:{}".format(name), self.tree.getroot().nsmap
+    def find_by_xpath(self, query: str) -> ElementTree:
+        return self.tree.xpath(query, namespaces=self.tree.getroot().nsmap)
+
+    def find_by_tag(self, tags: set[Tag] | Tag) -> list[Element]:
+        if isinstance(tags, Tag):
+            query = ".//html:{}".format(tags.value)
+        else:
+            query = ".//*[{}]".format(" or ".join("self::html:" + tag.value for tag in tags))
+        
+        return self.tree.xpath(
+            query, namespaces=self.tree.getroot().nsmap
         )
 
     def get_xpath(self, element: Element) -> str:
-        return self.tree.getpath(element).replace("html:", "")
+        return self.tree.getpath(element)
 
 
 def parse(dom_content: str) -> DomTree:

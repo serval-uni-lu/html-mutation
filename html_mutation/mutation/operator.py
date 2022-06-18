@@ -1,8 +1,19 @@
 from abc import abstractmethod
+from copy import deepcopy
+from typing import Iterator, Union
+from xml.etree.ElementTree import Element
 
 from html_mutation.html.dom import DomTree
 from html_mutation.html.tags import Tag
 
+
+class Mutant:
+    def __init__(
+        self, tree: DomTree, xpath: str, strategy: str
+    ) -> None:
+        self.tree = tree
+        self.xpath = xpath
+        self.strategy = strategy
 
 class BaseOperator:
     def __init__(
@@ -14,8 +25,15 @@ class BaseOperator:
             set() if ignored_tags is None else ignored_tags
         )
 
+    
+    def mutate(self, dom: DomTree) -> Iterator[Mutant]:
+        for node in dom.find_by_tag(self.tags):
+            mutant = self._mutate_node(dom, node)
+            if mutant:
+                yield mutant
+
     @abstractmethod
-    def mutate(self, dom):
+    def _mutate_node(self, dom: DomTree) -> Union[None, Mutant]:
         pass
 
     @abstractmethod
@@ -43,14 +61,12 @@ class ChangeTextOperator(BaseOperator):
             ]
         )
 
-    def mutate(self, tree: DomTree):
-        for node in tree:
-            if node.name in self.tags and node.string is not None:
-                pass
-
-
-class Mutant:
-    def __init__(self, dom, xpath: str, strategy: str):
-        self.dom = dom
-        self.xpath = xpath
-        self.strategy = strategy
+    def _mutate_node(self, tree: DomTree, node: Element) -> Union[None, Mutant]:
+        if not node.text:
+            return None
+        
+        mutated = deepcopy(tree)
+        xpath = tree.get_xpath(node)
+        target = mutated.find_by_xpath(xpath)[0]
+        target.text = target.text + "MUTATED"
+        return Mutant(mutated, xpath, self.short_name)
