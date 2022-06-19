@@ -8,12 +8,11 @@ from html_mutation.html.tags import Tag
 
 
 class Mutant:
-    def __init__(
-        self, tree: DomTree, xpath: str, strategy: str
-    ) -> None:
+    def __init__(self, tree: DomTree, xpath: str, strategy: str) -> None:
         self.tree = tree
         self.xpath = xpath
         self.strategy = strategy
+
 
 class BaseOperator:
     def __init__(
@@ -25,7 +24,6 @@ class BaseOperator:
             set() if ignored_tags is None else ignored_tags
         )
 
-    
     def mutate(self, dom: DomTree) -> Iterator[Mutant]:
         for node in dom.find_by_tag(self.tags):
             mutant = self._mutate_node(dom, node)
@@ -61,10 +59,12 @@ class ChangeTextOperator(BaseOperator):
             ]
         )
 
-    def _mutate_node(self, tree: DomTree, node: Element) -> Union[None, Mutant]:
+    def _mutate_node(
+        self, tree: DomTree, node: Element
+    ) -> Union[None, Mutant]:
         if not node.text:
             return None
-        
+
         mutated = deepcopy(tree)
         xpath = tree.get_xpath(node)
         target = mutated.find_by_xpath(xpath)[0]

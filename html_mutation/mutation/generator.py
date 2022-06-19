@@ -1,9 +1,10 @@
 from multiprocessing import Manager, Process, Queue, Value, cpu_count
 from queue import Empty
-from time import sleep
 
 from html_mutation.html.dom import DomInfo
 from html_mutation.mutation.operator import BaseOperator
+
+
 class MutantGenerator:
     def __init__(
         self, dom_info: DomInfo, operators: set[BaseOperator]
@@ -17,7 +18,6 @@ class MutantGenerator:
         with Manager() as manager:
             mutant_queue = manager.Queue()
             is_running = manager.Value(bool, True, lock=False)
-
 
             consumers = [
                 Process(
@@ -43,10 +43,11 @@ class MutantGenerator:
                     mutant_queue.put(mutant)
         finally:
             is_running.value = False
-            print("DONE")
 
 
-def _validate_mutants(mutant_queue: Queue, dom_info: DomInfo, is_running: Value) -> None:
+def _validate_mutants(
+    mutant_queue: Queue, dom_info: DomInfo, is_running: Value
+) -> None:
     while is_running.value:
         try:
             res = mutant_queue.get(block=False)

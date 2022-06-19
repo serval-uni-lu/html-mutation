@@ -20,14 +20,18 @@ def test_tc_muate():
     assert "HelloMUTATED" == mutants[0].tree.find_by_tag(Tag.H1)[0].text
     assert "This is a DOM" == mutants[0].tree.find_by_tag(Tag.SPAN)[0].text
     assert "Hello" == mutants[1].tree.find_by_tag(Tag.H1)[0].text
-    assert "This is a DOMMUTATED" == mutants[1].tree.find_by_tag(Tag.SPAN)[0].text
+    assert (
+        "This is a DOMMUTATED" == mutants[1].tree.find_by_tag(Tag.SPAN)[0].text
+    )
 
 
 def get_simple_dom():
-    return parse("""
+    return parse(
+        """
     <html>
         <body>
             <h1>Hello</h1>
             <p><span>This is a DOM</span></p>
         </body>
-    </html>""")
+    </html>"""
+    )
