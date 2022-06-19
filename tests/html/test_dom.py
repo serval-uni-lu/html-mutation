@@ -4,16 +4,16 @@ from html_mutation.html.tags import Tag
 
 def test_find_by_xpath():
     tree = dom.parse(get_simple_dom())
-    target = tree.find_by_xpath("/html:html/html:body/html:p")[0]
+    target = tree.find_by_xpath("/html/body/p")[0]
     assert 1 == len(target)
-    assert "{http://www.w3.org/1999/xhtml}p" == target.tag
+    assert "p" == target.tag
 
 
 def test_find_all_one_tag():
     tree = dom.parse(get_simple_dom())
     target = tree.find_by_tag(Tag.P)[0]
     assert 1 == len(target)
-    assert "{http://www.w3.org/1999/xhtml}p" == target.tag
+    assert "p" == target.tag
 
 
 def test_find_all_multiple_tags():
@@ -25,7 +25,7 @@ def test_find_all_multiple_tags():
 def test_get_xpath():
     tree = dom.parse(get_simple_dom())
     child = tree.find_by_tag(Tag.P)[0]
-    assert "/html:html/html:body/html:p" == tree.get_xpath(child)
+    assert "/html/body/p" == tree.get_xpath(child)
 
 
 def get_simple_dom():

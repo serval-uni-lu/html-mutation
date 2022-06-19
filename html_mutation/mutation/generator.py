@@ -1,9 +1,9 @@
-from multiprocessing import JoinableQueue, Process, cpu_count
+from multiprocessing import Manager, Process, Queue, Value, cpu_count
+from queue import Empty
+from time import sleep
 
 from html_mutation.html.dom import DomInfo
 from html_mutation.mutation.operator import BaseOperator
-
-
 class MutantGenerator:
     def __init__(
         self, dom_info: DomInfo, operators: set[BaseOperator]
@@ -12,37 +12,46 @@ class MutantGenerator:
         self.operators = operators
 
     def execute(self, number_process: int = 0):
-        mutants_queue = JoinableQueue()
-        self._create_mutants(mutants_queue)
-
         number_process = number_process if number_process > 0 else cpu_count()
 
-        consumers = [
-            Process(
-                target=_validate_mutants,
-                args=(mutants_queue, self.dom_info),
-                daemon=True,
-            )
-            for _ in range(number_process)
-        ]
-
-        for p in consumers:
-            p.start()
-
-        for p in consumers:
-            p.join()
-
-    def _create_mutants(self, mutants_queue: JoinableQueue) -> None:
-        for operator in self.operators:
-            operator.mutate(self.dom_info)
+        with Manager() as manager:
+            mutant_queue = manager.Queue()
+            is_running = manager.Value(bool, True, lock=False)
 
 
-def _validate_mutants(queue: JoinableQueue, dom_info: DomInfo) -> None:
-    while True:
+            consumers = [
+                Process(
+                    target=_validate_mutants,
+                    args=(mutant_queue, self.dom_info, is_running),
+                    daemon=True,
+                )
+                for _ in range(number_process)
+            ]
+
+            for p in consumers:
+                p.start()
+
+            self._create_mutants(mutant_queue, is_running)
+
+            for p in consumers:
+                p.join()
+
+    def _create_mutants(self, mutant_queue: Queue, is_running: Value) -> None:
         try:
-            res = queue.get(block=False)
+            for operator in self.operators:
+                for mutant in operator.mutate(self.dom_info.dom):
+                    mutant_queue.put(mutant)
+        finally:
+            is_running.value = False
+            print("DONE")
+
+
+def _validate_mutants(mutant_queue: Queue, dom_info: DomInfo, is_running: Value) -> None:
+    while is_running.value:
+        try:
+            res = mutant_queue.get(block=False)
             if res is None:
                 break
             print(f"Consume {res}")
-        except queue.Empty:
+        except Empty:
             pass
