@@ -1,10 +1,9 @@
 import base64
-import html5lib
 import pathlib
 from io import BytesIO
 from xml.etree.ElementTree import Element, ElementTree
-import html5lib
 
+import html5lib
 from lxml import html
 from PIL import Image
 from selenium import webdriver
@@ -18,7 +17,9 @@ class DomTree:
 
     def __getstate__(self) -> dict:
         dict = self.__dict__.copy()
-        dict["tree"] = html.tostring(self.tree, encoding="unicode", method="html")
+        dict["tree"] = html.tostring(
+            self.tree, encoding="unicode", method="html"
+        )
         return dict
 
     def __setstate__(self, dict: dict) -> None:
@@ -32,8 +33,10 @@ class DomTree:
         if isinstance(tags, Tag):
             query = ".//{}".format(tags.value)
         else:
-            query = ".//*[{}]".format(" or ".join("self::" + tag.value for tag in tags))
-        
+            query = ".//*[{}]".format(
+                " or ".join("self::" + tag.value for tag in tags)
+            )
+
         return self.tree.xpath(query)
 
     def get_xpath(self, element: Element) -> str:
@@ -41,11 +44,21 @@ class DomTree:
 
 
 def parse(dom_content: str) -> DomTree:
-    return DomTree(html5lib.parse(dom_content, treebuilder="lxml", namespaceHTMLElements=False))
+    return DomTree(
+        html5lib.parse(
+            dom_content, treebuilder="lxml", namespaceHTMLElements=False
+        )
+    )
 
 
 class DomInfo:
-    def __init__(self, path: pathlib.Path, dom: DomTree, image: Image, dom_id: str = None) -> None:
+    def __init__(
+        self,
+        path: pathlib.Path,
+        dom: DomTree,
+        image: Image,
+        dom_id: str = None,
+    ) -> None:
         self.path = path
         self.dom = dom
         self.image = image

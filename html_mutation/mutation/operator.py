@@ -1,5 +1,4 @@
 import enum
-
 from abc import abstractmethod
 from copy import deepcopy
 from typing import Iterator, Union
@@ -7,6 +6,7 @@ from xml.etree.ElementTree import Element
 
 from html_mutation.html.dom import DomTree
 from html_mutation.html.tags import Tag
+
 
 class Validity(enum.Enum):
     VALID = "valid"

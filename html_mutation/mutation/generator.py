@@ -7,7 +7,12 @@ from html_mutation.mutation.operator import BaseOperator, MutantEntry
 
 class MutantGenerator:
     def __init__(
-        self, dom_info: DomInfo, validator: type, persistor: type, persistor_args: dict, operators: set[BaseOperator]
+        self,
+        dom_info: DomInfo,
+        validator: type,
+        persistor: type,
+        persistor_args: dict,
+        operators: set[BaseOperator],
     ) -> None:
         self.dom_info = dom_info
         self.operators = operators
@@ -28,19 +33,34 @@ class MutantGenerator:
             validators = [
                 Process(
                     target=_validate_mutants,
-                    args=(self.dom_info, self.validator, mutant_queue, validated_queue, is_generating, validator_count, lock)
+                    args=(
+                        self.dom_info,
+                        self.validator,
+                        mutant_queue,
+                        validated_queue,
+                        is_generating,
+                        validator_count,
+                        lock,
+                    ),
                 )
                 for _ in range(number_process)
             ]
 
             persitor = Process(
                 target=_persist_mutants,
-                args=(self.dom_info, self.persistor, self.persistor_args, validated_queue, is_generating, validator_count)
+                args=(
+                    self.dom_info,
+                    self.persistor,
+                    self.persistor_args,
+                    validated_queue,
+                    is_generating,
+                    validator_count,
+                ),
             )
 
             for v in validators:
                 v.start()
-            
+
             persitor.start()
             self._create_mutants(mutant_queue, is_generating)
 
@@ -49,7 +69,9 @@ class MutantGenerator:
 
             persitor.join()
 
-    def _create_mutants(self, mutant_queue: Queue, is_generating: Value) -> None:
+    def _create_mutants(
+        self, mutant_queue: Queue, is_generating: Value
+    ) -> None:
         try:
             for operator in self.operators:
                 for mutant in operator.mutate(self.dom_info.dom):
@@ -59,7 +81,13 @@ class MutantGenerator:
 
 
 def _validate_mutants(
-    dom_info: DomInfo, validator: type, mutant_queue: Queue, validated_queue: Queue, is_generating: Value, validator_count: Value, lock: Lock
+    dom_info: DomInfo,
+    validator: type,
+    mutant_queue: Queue,
+    validated_queue: Queue,
+    is_generating: Value,
+    validator_count: Value,
+    lock: Lock,
 ) -> None:
     try:
         with lock:
@@ -69,7 +97,7 @@ def _validate_mutants(
                 try:
                     mutant = mutant_queue.get(block=False)
                     if mutant is None:
-                        continue 
+                        continue
                     validity = v.validate(mutant)
                     validated_queue.put(MutantEntry(mutant, validity))
                 except Empty:
@@ -79,13 +107,24 @@ def _validate_mutants(
             validator_count.value -= 1
 
 
-def _persist_mutants(dom_info: DomInfo, persistor: type, persistor_args: dict, validated_queue: Queue, is_generating: Value, validator_count: Value) -> None:
+def _persist_mutants(
+    dom_info: DomInfo,
+    persistor: type,
+    persistor_args: dict,
+    validated_queue: Queue,
+    is_generating: Value,
+    validator_count: Value,
+) -> None:
     with persistor(dom_info, **persistor_args) as p:
-        while is_generating.value or validator_count.value > 0 or not validated_queue.empty():
-                try:
-                    mutant = validated_queue.get(block=False)
-                    if mutant is None:
-                        continue 
-                    p.persist(mutant)
-                except Empty:
-                    pass        
+        while (
+            is_generating.value
+            or validator_count.value > 0
+            or not validated_queue.empty()
+        ):
+            try:
+                mutant = validated_queue.get(block=False)
+                if mutant is None:
+                    continue
+                p.persist(mutant)
+            except Empty:
+                pass

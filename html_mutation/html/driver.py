@@ -1,5 +1,3 @@
-import contextlib
-
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -15,5 +13,5 @@ def chrome_driver():
     chrome_options.add_experimental_option(
         "excludeSwitches", ["enable-logging"]
     )
-    
+
     return webdriver.Chrome(options=chrome_options)
