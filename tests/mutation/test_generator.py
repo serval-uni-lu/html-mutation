@@ -19,7 +19,7 @@ def test_generator():
 
     generator = MutantGenerator(
         get_simple_dom(),
-        TrueValidator,
+        DummyValidator,
         CsvPersistence,
         {"filename": filename},
         {ChangeTextOperator()},
@@ -44,17 +44,10 @@ def get_simple_dom():
     return DomInfo("", dom, None)
 
 
-class TrueValidator(BaseValidator):
+class DummyValidator(BaseValidator):
     def __init__(self, dom_info: DomInfo) -> None:
         super().__init__(dom_info)
 
     def validate(dom_info: DomInfo, mutant: Mutant) -> Validity:
         return Validity.VALID
 
-
-class FalseValidator(BaseValidator):
-    def __init__(self, dom_info: DomInfo) -> None:
-        super().__init__(dom_info)
-
-    def validate(dom_info: DomInfo, mutant: Mutant) -> Validity:
-        return Validity.INVALID
