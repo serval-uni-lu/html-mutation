@@ -4,7 +4,6 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-@contextlib.contextmanager
 def chrome_driver():
     chrome_options = Options()
     chrome_options.add_argument("--headless")
@@ -16,8 +15,5 @@ def chrome_driver():
     chrome_options.add_experimental_option(
         "excludeSwitches", ["enable-logging"]
     )
-    chrome_driver = webdriver.Chrome(options=chrome_options)
-    try:
-        yield chrome_driver
-    finally:
-        chrome_driver.close()
+    
+    return webdriver.Chrome(options=chrome_options)

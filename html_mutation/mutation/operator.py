@@ -1,3 +1,5 @@
+import enum
+
 from abc import abstractmethod
 from copy import deepcopy
 from typing import Iterator, Union
@@ -6,12 +8,23 @@ from xml.etree.ElementTree import Element
 from html_mutation.html.dom import DomTree
 from html_mutation.html.tags import Tag
 
+class Validity(enum.Enum):
+    VALID = "valid"
+    INVALID = "invalid"
+
 
 class Mutant:
     def __init__(self, tree: DomTree, xpath: str, strategy: str) -> None:
         self.tree = tree
         self.xpath = xpath
         self.strategy = strategy
+
+
+class MutantEntry:
+    def __init__(self, mutant: Mutant, validity: Validity) -> None:
+        self.xpath = mutant.xpath
+        self.strategy = mutant.strategy
+        self.validity = validity
 
 
 class BaseOperator:
