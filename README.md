@@ -4,8 +4,11 @@
 
 Before installing the pyenv environment make sure the following are installed on your machine:
 
-- sqlite3 (```sudo apt install sqlite3```)
-- ctypes (```sudo apt install libffi-dev```)
+```sh
+sudo apt-get install -y make build-essential libssl-dev zlib1g-dev libbz2-dev \
+libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev \
+xz-utils tk-dev libffi-dev liblzma-dev python-openssl git
+```
 
 Then make sure you have the following to be able to build:
 
