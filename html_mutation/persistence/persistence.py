@@ -5,7 +5,7 @@ from html_mutation.html.dom import DomInfo
 from html_mutation.mutation.operator import MutantEntry
 
 
-class BasePersistence:
+class BaseOutput:
     def __init__(self, dom_info: DomInfo) -> None:
         self.dom_info = dom_info
 
@@ -20,9 +20,9 @@ class BasePersistence:
         pass
 
 
-class CsvPersistence:
+class CsvOutput(BaseOutput):
     def __init__(self, dom_info: DomInfo, filename: str) -> None:
-        self.dom_info = dom_info
+        super().__init__(dom_info)
         self.filename = filename
 
     def __enter__(self):
